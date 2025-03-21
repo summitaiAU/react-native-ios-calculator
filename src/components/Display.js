@@ -33,3 +33,4 @@ const Display = ({ value }) => {
       </Text>
     </View>
   
+);
