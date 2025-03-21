@@ -1,6 +1,5 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
-
 /**
  * CalculatorButton Component
  * 
@@ -20,7 +19,7 @@ const CalculatorButton = ({ text, type = 'number', wide = false, onPress, isActi
    */
   const getButtonStyle = () => {
     const baseStyle = [styles.button];
-    \n    if (wide) baseStyle.push(styles.wideButton);
+    if (wide) baseStyle.push(styles.wideButton);
     
     switch (type) {
       case 'operation':
@@ -34,7 +33,7 @@ const CalculatorButton = ({ text, type = 'number', wide = false, onPress, isActi
         baseStyle.push(styles.numberButton);
         break;
     }
-    \n    return baseStyle;
+    return baseStyle;
   };
   
   /**
@@ -58,7 +57,6 @@ const CalculatorButton = ({ text, type = 'number', wide = false, onPress, isActi
     
     return baseStyle;
   };
-
   return (
     <TouchableOpacity 
       style={getButtonStyle()} 
@@ -67,5 +65,12 @@ const CalculatorButton = ({ text, type = 'number', wide = false, onPress, isActi
     >
       <Text style={getTextStyle()}>{text}</Text>
     </TouchableOpacity>
-  
-);
+  );
+};
+
+export default CalculatorButton;
+
+// Add your styles here
+const styles = StyleSheet.create({
+  // Styles would go here
+});
