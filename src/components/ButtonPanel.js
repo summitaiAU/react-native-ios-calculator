@@ -37,3 +37,4 @@ const ButtonPanel = ({ onButtonPress, clearButton = 'AC' }) => {
       ))}
     </View>
   
+);
