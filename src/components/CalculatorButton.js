@@ -68,3 +68,4 @@ const CalculatorButton = ({ text, type = 'number', wide = false, onPress, isActi
       <Text style={getTextStyle()}>{text}</Text>
     </TouchableOpacity>
   
+);
