@@ -22,176 +22,378 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
       
-      - name: Generate lock file and install dependencies
+      - name: Install dependencies
         run: |
-          # Create basic package.json if it doesn't exist or update it
-          if ! grep -q '"expo":' package.json; then
-            npx json -I -f package.json -e 'this.dependencies = this.dependencies || {}; this.dependencies.expo = "~48.0.18"'
+          # Generate a proper lock file if needed
+          if [ ! -f package-lock.json ]; then
+            npm install --package-lock-only
           fi
           
-          if ! grep -q '"expo-updates":' package.json; then
-            npx json -I -f package.json -e 'this.dependencies = this.dependencies || {}; this.dependencies["expo-updates"] = "~0.16.4"'
-          fi
-          
-          if ! grep -q '"react":' package.json; then
-            npx json -I -f package.json -e 'this.dependencies = this.dependencies || {}; this.dependencies.react = "18.2.0"'
-          fi
-          
-          if ! grep -q '"react-native":' package.json; then
-            npx json -I -f package.json -e 'this.dependencies = this.dependencies || {}; this.dependencies["react-native"] = "0.71.8"'
-          fi
-          
-          # Fix package.json if necessary
-          if [ ! -f package.json ]; then
-            echo '{
-              "name": "ai-generated-app",
-              "version": "1.0.0",
-              "private": true,
-              "dependencies": {
-                "expo": "~48.0.18",
-                "expo-updates": "~0.16.4",
-                "react": "18.2.0",
-                "react-native": "0.71.8"
-              }
-            }' > package.json
-          fi
-          
-          # Generate a proper lock file
-          npm install --package-lock-only
-          
-          # Now install with the lock file
+          # Install dependencies with legacy peer deps flag
           npm ci || npm install --legacy-peer-deps
           
           # Install EAS CLI
           npm install -g eas-cli@latest
           
+      - name: Install required packages
+        run: |
+          # Check and install required packages
+          if ! npm list expo > /dev/null 2>&1; then
+            npm install --save expo@~48.0.18
+          fi
+          
+          if ! npm list expo-updates > /dev/null 2>&1; then
+            npm install --save expo-updates@~0.16.4
+          fi
+          
+          if ! npm list react-native-safe-area-context > /dev/null 2>&1; then
+            npm install --save react-native-safe-area-context
+          fi
+          
+          if ! npm list expo-status-bar > /dev/null 2>&1; then
+            npm install --save expo-status-bar
+          fi
+          
+      - name: Create assets directory
+        run: mkdir -p assets
+          
+      - name: Download asset files
+        run: |
+          curl -s https://raw.githubusercontent.com/expo/expo/master/templates/expo-template-blank/assets/icon.png -o assets/icon.png || echo "Failed to download icon"
+          curl -s https://raw.githubusercontent.com/expo/expo/master/templates/expo-template-blank/assets/splash.png -o assets/splash.png || echo "Failed to download splash"
+          curl -s https://raw.githubusercontent.com/expo/expo/master/templates/expo-template-blank/assets/adaptive-icon.png -o assets/adaptive-icon.png || echo "Failed to download adaptive icon"
+          curl -s https://raw.githubusercontent.com/expo/expo/master/templates/expo-template-blank/assets/favicon.png -o assets/favicon.png || echo "Failed to download favicon"
+          
       - name: Create or update app.json
         run: |
           if [ ! -f app.json ]; then
             echo '{
-              "expo": {
-                "name": "AI Generated App",
-                "slug": "ai-generated-app",
-                "version": "1.0.0",
-                "orientation": "portrait",
-                "icon": "./assets/icon.png",
-                "userInterfaceStyle": "light",
-                "splash": {
-                  "image": "./assets/splash.png",
-                  "resizeMode": "contain",
-                  "backgroundColor": "#ffffff"
-                },
-                "updates": {
-                  "fallbackToCacheTimeout": 0,
-                  "url": "https://u.expo.dev/your-project-id"
-                },
-                "assetBundlePatterns": [
-                  "**/*"
-                ],
-                "ios": {
-                  "supportsTablet": true
-                },
-                "android": {
-                  "adaptiveIcon": {
-                    "foregroundImage": "./assets/adaptive-icon.png",
-                    "backgroundColor": "#FFFFFF"
-                  }
-                },
-                "web": {
-                  "favicon": "./assets/favicon.png"
-                },
-                "runtimeVersion": {
-                  "policy": "sdkVersion"
-                }
-              }
-            }' > app.json
+  "expo": {
+    "name": "iOS Calculator",
+    "slug": "react-native-ios-calculator",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    }
+  }
+}' > app.json
           fi
           
       - name: Create or update eas.json
         run: |
           if [ ! -f eas.json ]; then
             echo '{
-              "cli": {
-                "version": ">=15.0.0"
-              },
-              "build": {
-                "development": {
-                  "developmentClient": true,
-                  "distribution": "internal"
-                },
-                "preview": {
-                  "distribution": "internal"
-                },
-                "production": {}
-              },
-              "submit": {
-                "production": {}
-              }
-            }' > eas.json
-          else
-            # Update CLI version constraint if it exists
-            if grep -q '"cli":' eas.json; then
-              npx json -I -f eas.json -e 'this.cli.version = ">=15.0.0"'
-            fi
+  "cli": {
+    "version": ">=15.0.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}' > eas.json
           fi
           
-      - name: Create assets directory if needed
+      - name: Check for CalculatorScreen.js
         run: |
-          mkdir -p assets
-          
-          # Download placeholder images if they don't exist
-          if [ ! -f assets/icon.png ]; then
-            curl -s https://raw.githubusercontent.com/expo/expo/master/templates/expo-template-blank/assets/icon.png -o assets/icon.png || echo "Failed to download icon"
-          fi
-          if [ ! -f assets/splash.png ]; then
-            curl -s https://raw.githubusercontent.com/expo/expo/master/templates/expo-template-blank/assets/splash.png -o assets/splash.png || echo "Failed to download splash"
-          fi
-          if [ ! -f assets/adaptive-icon.png ]; then
-            curl -s https://raw.githubusercontent.com/expo/expo/master/templates/expo-template-blank/assets/adaptive-icon.png -o assets/adaptive-icon.png || echo "Failed to download adaptive icon"
-          fi
-          if [ ! -f assets/favicon.png ]; then
-            curl -s https://raw.githubusercontent.com/expo/expo/master/templates/expo-template-blank/assets/favicon.png -o assets/favicon.png || echo "Failed to download favicon"
-          fi
-          
-      - name: Fix App.js
-        run: |
-          # Create a fresh App.js file
-          cat > App.js << 'EOL'
-import React from "react";
-import { StyleSheet, Text, View, SafeAreaView } from "react-native";
+          mkdir -p src/screens
+          if [ ! -f src/screens/CalculatorScreen.js ]; then
+            echo 'import React, { useState } from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
-export default function App() {
+const CalculatorScreen = () => {
+  const [displayValue, setDisplayValue] = useState("0");
+  const [operator, setOperator] = useState(null);
+  const [firstValue, setFirstValue] = useState("");
+  const [waitingForOperand, setWaitingForOperand] = useState(false);
+
+  const inputDigit = (digit) => {
+    if (waitingForOperand) {
+      setDisplayValue(String(digit));
+      setWaitingForOperand(false);
+    } else {
+      setDisplayValue(displayValue === "0" ? String(digit) : displayValue + digit);
+    }
+  };
+
+  const inputDot = () => {
+    if (waitingForOperand) {
+      setDisplayValue("0.");
+      setWaitingForOperand(false);
+    } else if (displayValue.indexOf(".") === -1) {
+      setDisplayValue(displayValue + ".");
+    }
+  };
+
+  const clearDisplay = () => {
+    setDisplayValue("0");
+    setFirstValue("");
+    setOperator(null);
+    setWaitingForOperand(false);
+  };
+
+  const toggleSign = () => {
+    const newValue = parseFloat(displayValue) * -1;
+    setDisplayValue(String(newValue));
+  };
+
+  const inputPercent = () => {
+    const currentValue = parseFloat(displayValue);
+    const newValue = currentValue / 100;
+    setDisplayValue(String(newValue));
+  };
+
+  const performOperation = (nextOperator) => {
+    const inputValue = parseFloat(displayValue);
+
+    if (firstValue === "") {
+      setFirstValue(inputValue);
+    } else if (operator) {
+      const currentValue = firstValue || 0;
+      let newValue = 0;
+
+      switch (operator) {
+        case "+":
+          newValue = currentValue + inputValue;
+          break;
+        case "-":
+          newValue = currentValue - inputValue;
+          break;
+        case "×":
+          newValue = currentValue * inputValue;
+          break;
+        case "÷":
+          newValue = currentValue / inputValue;
+          break;
+      }
+
+      setDisplayValue(String(newValue));
+      setFirstValue(newValue);
+    }
+
+    setWaitingForOperand(true);
+    setOperator(nextOperator);
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Calculator</Text>
+    <View style={styles.container}>
+      <View style={styles.display}>
+        <Text style={styles.displayText}>{displayValue}</Text>
       </View>
-    </SafeAreaView>
+      <View style={styles.buttons}>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={[styles.button, styles.functionButton]}
+            onPress={() => clearDisplay()}
+          >
+            <Text style={styles.buttonText}>AC</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.functionButton]}
+            onPress={() => toggleSign()}
+          >
+            <Text style={styles.buttonText}>+/-</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.functionButton]}
+            onPress={() => inputPercent()}
+          >
+            <Text style={styles.buttonText}>%</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.operatorButton]}
+            onPress={() => performOperation("÷")}
+          >
+            <Text style={styles.buttonText}>÷</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => inputDigit(7)}
+          >
+            <Text style={styles.buttonText}>7</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => inputDigit(8)}
+          >
+            <Text style={styles.buttonText}>8</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => inputDigit(9)}
+          >
+            <Text style={styles.buttonText}>9</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.operatorButton]}
+            onPress={() => performOperation("×")}
+          >
+            <Text style={styles.buttonText}>×</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => inputDigit(4)}
+          >
+            <Text style={styles.buttonText}>4</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => inputDigit(5)}
+          >
+            <Text style={styles.buttonText}>5</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => inputDigit(6)}
+          >
+            <Text style={styles.buttonText}>6</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.operatorButton]}
+            onPress={() => performOperation("-")}
+          >
+            <Text style={styles.buttonText}>-</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => inputDigit(1)}
+          >
+            <Text style={styles.buttonText}>1</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => inputDigit(2)}
+          >
+            <Text style={styles.buttonText}>2</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => inputDigit(3)}
+          >
+            <Text style={styles.buttonText}>3</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.operatorButton]}
+            onPress={() => performOperation("+")}
+          >
+            <Text style={styles.buttonText}>+</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={[styles.button, styles.zeroButton]}
+            onPress={() => inputDigit(0)}
+          >
+            <Text style={styles.buttonText}>0</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => inputDot()}
+          >
+            <Text style={styles.buttonText}>.</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, styles.operatorButton]}
+            onPress={() => performOperation("=")}
+          >
+            <Text style={styles.buttonText}>=</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#000",
+    padding: 12,
   },
-  content: {
+  display: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+    padding: 10,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+  displayText: {
+    fontSize: 72,
+    color: "#fff",
+    fontWeight: "300",
+  },
+  buttons: {
+    flex: 3,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  button: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#333",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  zeroButton: {
+    width: 170,
+    borderRadius: 40,
+    paddingLeft: 30,
+    alignItems: "flex-start",
+  },
+  functionButton: {
+    backgroundColor: "#a5a5a5",
+  },
+  operatorButton: {
+    backgroundColor: "#f1a33c",
+  },
+  buttonText: {
+    fontSize: 30,
+    color: "#fff",
   },
 });
-EOL
-          
-          # Show the final App.js for debugging
-          echo "Final App.js content:"
-          cat App.js
+
+export default CalculatorScreen;' > src/screens/CalculatorScreen.js
+          fi
           
       - name: Expo Login
         run: CI=1 npx expo login -u ${{ secrets.EXPO_USERNAME }} -p ${{ secrets.EXPO_PASSWORD }}
@@ -202,7 +404,7 @@ EOL
       - name: EAS Update
         run: npx eas update --branch main --message "CI update from GitHub Actions" --non-interactive
         
-      - name: Display QR code URL in logs
+      - name: Display QR code info
         run: |
           echo "✅ App successfully deployed to Expo!"
           echo "📱 You can test the app by scanning the QR code in the Expo Go app"
