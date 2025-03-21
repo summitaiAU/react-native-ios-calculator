@@ -53,7 +53,7 @@ A React Native calculator app styled like iOS calculator with basic arithmetic o
 ## Usage
 
 - Tap numeric buttons to input numbers
-- Tap operation buttons (+, -, ×, ÷) to perform operations
+- Tap operation buttons (+, -, Ã—, Ã·) to perform operations
 - Tap '=' to calculate the result
 - Tap 'AC' to clear all input
 - Tap '+/-' to toggle between positive and negative numbers
@@ -63,18 +63,18 @@ A React Native calculator app styled like iOS calculator with basic arithmetic o
 
 ```
 react-native-ios-calculator/
-═ App.js              # Main application entry point
-⁑ app.json          # Expo configuration
-	═ src/
-╡ components/      # UI components
-⁡ |─── ButtonPanel.js    Calculator button layout
-�� |
-⁡ |
-⁡ `CalculatorButton.js Individual button component
-⁡ `Display.js       Calculator display component
-⁡ screens/
-���`CalculatorScreen.js # Main calculator screen logic
-─ package.json      Dependencies and scripts
+â• App.js              # Main application entry point
+â‘ app.json          # Expo configuration
+	â• src/
+â•¡ components/      # UI components
+â¡ |â”€â”€â”€ ButtonPanel.js    Calculator button layout
+Š¡ |
+â¡ |
+â¡ `CalculatorButton.js Individual button component
+â¡ `Display.js       Calculator display component
+â¡ screens/
+Š„€`CalculatorScreen.js # Main calculator screen logic
+â”€ package.json      Dependencies and scripts
 ```
 
 ## Technology Stack
@@ -82,3 +82,5 @@ react-native-ios-calculator/
 - React Native
 - JavaScript
 - Expo
+
+## Test
