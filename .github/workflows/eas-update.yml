@@ -155,39 +155,9 @@ jobs:
           
       - name: Fix App.js
         run: |
-          # Check if App.js exists
-          if [ -f App.js ]; then
-            # First, backup the existing file
-            cp App.js App.js.bak
-            
-            # Check content for SafeAreaProvider
-            if grep -q "SafeAreaProvider" App.js; then
-              # Fix syntax error by checking for incomplete return statement
-              awk '{
-                if ($0 ~ /SafeAreaProvider/ && !printed) {
-                  in_component = 1;
-                }
-                if (in_component && $0 ~ /^$/) {
-                  # Empty line after SafeAreaProvider closing tag
-                  print "  );"
-                  printed = 1;
-                  in_component = 0;
-                } else {
-                  print $0;
-                }
-              }' App.js.bak > App.js.fixed
-              
-              # Check if we fixed anything
-              if cmp -s App.js.bak App.js.fixed; then
-                # No change, try more aggressive fix
-                echo "First fix attempt didn't change the file, trying alternate approach..."
-                sed '/SafeAreaProvider/,/^$/s/^$/  );/' App.js.bak > App.js.fixed
-              fi
-              
-              mv App.js.fixed App.js
-            else
-              # Create a basic App.js file if SafeAreaProvider not found
-              echo 'import React from "react";
+          # Create a fresh App.js file
+          cat > App.js << 'EOL'
+import React from "react";
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 
 export default function App() {
@@ -216,41 +186,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
   },
-});' > App.js
-            fi
-          else
-            # Create a basic App.js if it doesn't exist
-            echo 'import React from "react";
-import { StyleSheet, Text, View, SafeAreaView } from "react-native";
-
-export default function App() {
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Calculator</Text>
-      </View>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f0f0f0",
-  },
-  content: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-});' > App.js
-          fi
+});
+EOL
           
           # Show the final App.js for debugging
           echo "Final App.js content:"
