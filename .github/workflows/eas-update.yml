@@ -16,35 +16,97 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
           
-      - name: Install EAS CLI
-        run: npm install -g eas-cli@latest
-        
-      - name: Update package.json for EAS
+      - name: Setup git user
         run: |
-          # Check if we need to add or update critical dependencies
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+      
+      - name: Generate lock file and install dependencies
+        run: |
+          # Create basic package.json if it doesn't exist or update it
           if ! grep -q '"expo":' package.json; then
-            npx json -I -f package.json -e 'this.dependencies.expo = "~48.0.18"'
+            npx json -I -f package.json -e 'this.dependencies = this.dependencies || {}; this.dependencies.expo = "~48.0.18"'
           fi
+          
           if ! grep -q '"expo-updates":' package.json; then
-            npx json -I -f package.json -e 'this.dependencies["expo-updates"] = "~0.16.4"'
+            npx json -I -f package.json -e 'this.dependencies = this.dependencies || {}; this.dependencies["expo-updates"] = "~0.16.4"'
           fi
-          # Ensure compatible React Native version
-          npx json -I -f package.json -e 'this.dependencies["react-native"] = "0.71.8"'
           
-      - name: Install Dependencies
+          if ! grep -q '"react":' package.json; then
+            npx json -I -f package.json -e 'this.dependencies = this.dependencies || {}; this.dependencies.react = "18.2.0"'
+          fi
+          
+          if ! grep -q '"react-native":' package.json; then
+            npx json -I -f package.json -e 'this.dependencies = this.dependencies || {}; this.dependencies["react-native"] = "0.71.8"'
+          fi
+          
+          # Fix package.json if necessary
+          if [ ! -f package.json ]; then
+            echo '{
+              "name": "ai-generated-app",
+              "version": "1.0.0",
+              "private": true,
+              "dependencies": {
+                "expo": "~48.0.18",
+                "expo-updates": "~0.16.4",
+                "react": "18.2.0",
+                "react-native": "0.71.8"
+              }
+            }' > package.json
+          fi
+          
+          # Generate a proper lock file
+          npm install --package-lock-only
+          
+          # Now install with the lock file
+          npm ci || npm install --legacy-peer-deps
+          
+          # Install EAS CLI
+          npm install -g eas-cli@latest
+          
+      - name: Create or update app.json
         run: |
-          # Check if package-lock.json exists
-          if [ ! -f package-lock.json ]; then
-            echo "No package-lock.json found, creating one..."
-            # Create an empty package-lock.json
-            echo '{}' > package-lock.json
+          if [ ! -f app.json ]; then
+            echo '{
+              "expo": {
+                "name": "AI Generated App",
+                "slug": "ai-generated-app",
+                "version": "1.0.0",
+                "orientation": "portrait",
+                "icon": "./assets/icon.png",
+                "userInterfaceStyle": "light",
+                "splash": {
+                  "image": "./assets/splash.png",
+                  "resizeMode": "contain",
+                  "backgroundColor": "#ffffff"
+                },
+                "updates": {
+                  "fallbackToCacheTimeout": 0,
+                  "url": "https://u.expo.dev/your-project-id"
+                },
+                "assetBundlePatterns": [
+                  "**/*"
+                ],
+                "ios": {
+                  "supportsTablet": true
+                },
+                "android": {
+                  "adaptiveIcon": {
+                    "foregroundImage": "./assets/adaptive-icon.png",
+                    "backgroundColor": "#FFFFFF"
+                  }
+                },
+                "web": {
+                  "favicon": "./assets/favicon.png"
+                },
+                "runtimeVersion": {
+                  "policy": "sdkVersion"
+                }
+              }
+            }' > app.json
           fi
           
-          # Install dependencies
-          npm install --legacy-peer-deps
-        
       - name: Create or update eas.json
         run: |
           if [ ! -f eas.json ]; then
@@ -64,9 +126,6 @@ jobs:
               },
               "submit": {
                 "production": {}
-              },
-              "updates": {
-                "url": "https://u.expo.dev/your-project-id"
               }
             }' > eas.json
           else
@@ -87,12 +146,19 @@ jobs:
           if [ ! -f assets/splash.png ]; then
             curl -s https://raw.githubusercontent.com/expo/expo/master/templates/expo-template-blank/assets/splash.png -o assets/splash.png || echo "Failed to download splash"
           fi
+          if [ ! -f assets/adaptive-icon.png ]; then
+            curl -s https://raw.githubusercontent.com/expo/expo/master/templates/expo-template-blank/assets/adaptive-icon.png -o assets/adaptive-icon.png || echo "Failed to download adaptive icon"
+          fi
+          if [ ! -f assets/favicon.png ]; then
+            curl -s https://raw.githubusercontent.com/expo/expo/master/templates/expo-template-blank/assets/favicon.png -o assets/favicon.png || echo "Failed to download favicon"
+          fi
           
       - name: Create basic App.js if missing
         run: |
           if [ ! -f App.js ]; then
             echo 'import React from "react";
             import { StyleSheet, Text, View } from "react-native";
+            
             export default function App() {
               return (
                 <View style={styles.container}>
@@ -101,6 +167,7 @@ jobs:
                 </View>
               );
             }
+            
             const styles = StyleSheet.create({
               container: {
                 flex: 1,
@@ -124,3 +191,9 @@ jobs:
         
       - name: EAS Update
         run: npx eas update --branch main --message "CI update from GitHub Actions" --non-interactive
+        
+      - name: Display QR code URL in logs
+        run: |
+          echo "✅ App successfully deployed to Expo!"
+          echo "📱 You can test the app by scanning the QR code in the Expo Go app"
+          echo "🔗 The QR code is available on your Expo dashboard"
