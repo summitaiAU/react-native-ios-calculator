@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import CalculatorButton from './CalculatorButton';
-
 /**
  * ButtonPanel component that renders the calculator buttons in a grid layout
  * matching the iOS calculator design
@@ -19,7 +18,6 @@ const ButtonPanel = ({ onButtonPress, clearButton = 'AC' }) => {
     [{ text: '1', type: 'number' }, { text: '2', type: 'number' }, { text: '3', type: 'number' }, { text: '+', type: 'operation' }],
     [{ text: '0', type: 'number', wide: true }, { text: '.', type: 'number' }, { text: '=', type: 'operation' }]
   ];
-
   return (
     <View style={styles.container}>
       {buttons.map((row, rowIndex) => (
@@ -36,5 +34,18 @@ const ButtonPanel = ({ onButtonPress, clearButton = 'AC' }) => {
         </View>
       ))}
     </View>
-  
-);
+  );
+};
+
+export default ButtonPanel;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10
+  }
+});
