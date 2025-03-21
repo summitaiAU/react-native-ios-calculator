@@ -34,7 +34,16 @@ jobs:
           npx json -I -f package.json -e 'this.dependencies["react-native"] = "0.71.8"'
           
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          # Check if package-lock.json exists
+          if [ ! -f package-lock.json ]; then
+            echo "No package-lock.json found, creating one..."
+            # Create an empty package-lock.json
+            echo '{}' > package-lock.json
+          fi
+          
+          # Install dependencies
+          npm install --legacy-peer-deps
         
       - name: Create or update eas.json
         run: |
