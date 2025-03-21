@@ -25,7 +25,7 @@ const CalculatorScreen = () => {
     if (value === 'Error' || value === 'Infinity' || value === '-Infinity') {
       return 'Error';
     }
-    \n    // Don't format during decimal input
+     // Don't format during decimal input
     if (value.includes('.')) {
       const [integerPart, decimalPart] = value.split('.');
       const formattedInteger = parseFloat(integerPart).toLocaleString('en-US', {
