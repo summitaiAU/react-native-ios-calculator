@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-
 /**
  * Display component for iOS calculator
  * Renders the calculator display with current value
@@ -21,7 +20,6 @@ const Display = ({ value }) => {
     if (length > 5) return 60;
     return 70;
   }, [displayValue]);
-
   return (
     <View style={styles.container}>
       <Text 
@@ -32,5 +30,19 @@ const Display = ({ value }) => {
         {value}
       </Text>
     </View>
-  
-);
+  );
+};
+
+export default Display;
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end'
+  },
+  displayText: {
+    color: 'white',
+    fontWeight: '300'
+  }
+});
