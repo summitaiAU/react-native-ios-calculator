@@ -199,6 +199,9 @@ const CalculatorScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Added top spacer for better vertical centering */}
+      <View style={styles.topSpacer} />
+      
       <View style={styles.calculator}>
         <Display value={formattedValue} />
         <ButtonPanel 
@@ -206,6 +209,9 @@ const CalculatorScreen = () => {
           clearButton={clearButtonText}
         />
       </View>
+      
+      {/* Added bottom spacer for better padding above home indicator */}
+      <View style={styles.bottomSpacer} />
     </SafeAreaView>
   );
 };
@@ -214,11 +220,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+    justifyContent: 'center', // Center content vertically
+  },
+  topSpacer: {
+    flex: 0.5, // Takes 1/6 of available space
   },
   calculator: {
-    flex: 1,
+    flex: 4, // Takes 4/6 of available space
     justifyContent: 'flex-end',
     padding: 10,
+  },
+  bottomSpacer: {
+    flex: 0.5, // Takes 1/6 of available space
   },
 });
 
