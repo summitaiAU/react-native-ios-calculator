@@ -85,9 +85,6 @@ const CalculatorScreen = () => {
     return result.toString();
   }, []);
 
-<<<<<<< HEAD
-  //... (rest of the function is the same as the original code)
-=======
   /**
    * Handles all button presses and updates calculator state
    * @param {string} buttonText - The text of the pressed button
@@ -193,7 +190,6 @@ const CalculatorScreen = () => {
         break;
     }
   }, [displayValue]);
->>>>>>> local-fixes
 
   // Determine the buttons' display text - AC vs C
   const clearButtonText = clearAll ? 'AC' : 'C';
@@ -222,17 +218,8 @@ const styles = StyleSheet.create({
   calculator: {
     flex: 1,
     justifyContent: 'flex-end',
-<<<<<<< HEAD
-  },
-});
-
-export default CalculatorScreen;
-
-// NOTE: This is a condensed version of the original code. You may want to fill in the rest of the functionality from the original file if necessary.
-=======
     padding: 10,
   },
 });
 
 export default CalculatorScreen;
->>>>>>> local-fixes

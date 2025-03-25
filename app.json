@@ -4,17 +4,7 @@
     "slug": "ios-calculator",
     "version": "1.0.0",
     "orientation": "portrait",
-<<<<<<< HEAD
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-=======
-    "userInterfaceStyle": "light",
->>>>>>> local-fixes
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -22,36 +12,19 @@
       "supportsTablet": true
     },
     "android": {
-<<<<<<< HEAD
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
-=======
       "backgroundColor": "#ffffff"
->>>>>>> local-fixes
     },
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
     "updates": {
-<<<<<<< HEAD
-      "url": "https://u.expo.dev/ab96fac5-27c0-4e3e-96cb-ed7fc7693785",
-=======
->>>>>>> local-fixes
       "fallbackToCacheTimeout": 0
     },
     "extra": {
       "eas": {
         "projectId": "ab96fac5-27c0-4e3e-96cb-ed7fc7693785"
       }
-<<<<<<< HEAD
-    }
-  }
-}
-=======
     },
     "newArchEnabled": true
   }
 }
->>>>>>> local-fixes
