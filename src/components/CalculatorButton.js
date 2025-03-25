@@ -70,7 +70,57 @@ const CalculatorButton = ({ text, type = 'number', wide = false, onPress, isActi
 
 export default CalculatorButton;
 
+<<<<<<< HEAD
 // Add your styles here
 const styles = StyleSheet.create({
   // Styles would go here
 });
+=======
+// Calculate button size based on screen size
+const screenWidth = Dimensions.get('window').width;
+const buttonWidth = (screenWidth - 50) / 4;  // 50 = 5 * 10 (margins)
+
+const styles = StyleSheet.create({
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: buttonWidth,
+    width: buttonWidth,
+    borderRadius: buttonWidth / 2,
+    margin: 5,
+  },
+  wideButton: {
+    width: buttonWidth * 2 + 10, // 10 = margin between buttons
+    alignItems: 'flex-start',
+    paddingLeft: 30,
+  },
+  operationButton: {
+    backgroundColor: '#FF9500', // Orange
+  },
+  activeOperationButton: {
+    backgroundColor: 'white',
+  },
+  functionButton: {
+    backgroundColor: '#A5A5A5', // Light gray
+  },
+  numberButton: {
+    backgroundColor: '#333333', // Dark gray
+  },
+  text: {
+    fontSize: 30,
+    fontWeight: '500',
+  },
+  numberText: {
+    color: 'white',
+  },
+  functionText: {
+    color: 'black',
+  },
+  operationText: {
+    color: 'white',
+  },
+  activeOperationText: {
+    color: '#FF9500', // Orange
+  },
+});
+>>>>>>> local-fixes
