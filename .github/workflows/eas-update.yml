@@ -1,0 +1,38 @@
+name: EAS Update (Expo)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  eas-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          
+      - name: Install dependencies
+        run: |
+          if [ ! -f package-lock.json ]; then
+            echo "No package-lock.json found, creating one..."
+            npm install --package-lock-only
+          fi
+          npm install --legacy-peer-deps
+          
+      - name: Install EAS CLI
+        run: npm install -g eas-cli@latest
+          
+      - name: Expo Login
+        run: CI=1 npx expo login -u ${{ secrets.EXPO_USERNAME }} -p ${{ secrets.EXPO_PASSWORD }}
+        
+      - name: Initialize EAS Project
+        run: npx eas init --non-interactive --force
+        
+      - name: EAS Update
+        run: npx eas update --branch main --message "CI update from GitHub Actions" --non-interactive
