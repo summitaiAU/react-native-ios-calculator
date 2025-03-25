@@ -85,7 +85,115 @@ const CalculatorScreen = () => {
     return result.toString();
   }, []);
 
+<<<<<<< HEAD
   //... (rest of the function is the same as the original code)
+=======
+  /**
+   * Handles all button presses and updates calculator state
+   * @param {string} buttonText - The text of the pressed button
+   * @param {string} buttonType - The type of the pressed button (number, operation, function)
+   */
+  const handleButtonPress = useCallback((buttonText, buttonType) => {
+    switch (buttonType) {
+      case 'number':
+        handleNumberInput(buttonText);
+        break;
+      case 'operation':
+        handleOperation(buttonText);
+        break;
+      case 'function':
+        handleFunction(buttonText);
+        break;
+    }
+  }, []);
+
+  /**
+   * Handles numeric input (digits and decimal point)
+   * @param {string} digit - The digit or decimal point pressed
+   */
+  const handleNumberInput = useCallback((digit) => {
+    // Set clearAll to false since we have input
+    setClearAll(false);
+
+    if (waitingForOperand) {
+      setDisplayValue(digit === '.' ? '0.' : digit);
+      setWaitingForOperand(false);
+    } else {
+      // Handle decimal point
+      if (digit === '.') {
+        if (!displayValue.includes('.')) {
+          setDisplayValue(displayValue + '.');
+        }
+        return;
+      }
+      
+      // Replace 0 at the beginning
+      if (displayValue === '0') {
+        setDisplayValue(digit);
+      } else {
+        // Limit input length to prevent overflow
+        if (displayValue.replace(/[,.]/g, '').length < 9) {
+          setDisplayValue(displayValue + digit);
+        }
+      }
+    }
+  }, [displayValue, waitingForOperand]);
+
+  /**
+   * Handles operation buttons (+, -, ×, ÷, =)
+   * @param {string} nextOperation - The operation button pressed
+   */
+  const handleOperation = useCallback((nextOperation) => {
+    // Parse the current display value
+    const inputValue = displayValue;
+    
+    // If we already have a stored operation and value
+    if (operation && previousValue !== null && !waitingForOperand) {
+      const result = calculate(previousValue, inputValue, operation);
+      setDisplayValue(result);
+      setPreviousValue(result);
+    } else {
+      setPreviousValue(inputValue);
+    }
+    
+    // Handle equals button
+    if (nextOperation === '=') {
+      setOperation(null);
+    } else {
+      setOperation(nextOperation);
+    }
+    
+    setWaitingForOperand(true);
+  }, [displayValue, operation, previousValue, waitingForOperand, calculate]);
+
+  /**
+   * Handles function buttons (AC/C, ±, %)
+   * @param {string} func - The function button pressed
+   */
+  const handleFunction = useCallback((func) => {
+    switch (func) {
+      case 'AC':
+      case 'C':
+        setDisplayValue('0');
+        setPreviousValue(null);
+        setOperation(null);
+        setWaitingForOperand(false);
+        setClearAll(true);
+        break;
+      case '±':
+        setDisplayValue(
+          displayValue.charAt(0) === '-' 
+            ? displayValue.substring(1) 
+            : '-' + displayValue
+        );
+        break;
+      case '%':
+        const value = parseFloat(displayValue) / 100;
+        setDisplayValue(value.toString());
+        break;
+    }
+  }, [displayValue]);
+>>>>>>> local-fixes
 
   // Determine the buttons' display text - AC vs C
   const clearButtonText = clearAll ? 'AC' : 'C';
@@ -114,9 +222,17 @@ const styles = StyleSheet.create({
   calculator: {
     flex: 1,
     justifyContent: 'flex-end',
+<<<<<<< HEAD
   },
 });
 
 export default CalculatorScreen;
 
 // NOTE: This is a condensed version of the original code. You may want to fill in the rest of the functionality from the original file if necessary.
+=======
+    padding: 10,
+  },
+});
+
+export default CalculatorScreen;
+>>>>>>> local-fixes

@@ -13,11 +13,19 @@
     "expo-status-bar": "~1.11.1",
     "react": "18.2.0",
     "react-native": "0.73.2",
+<<<<<<< HEAD
     "react-native-safe-area-context": "4.8.2",
     "expo-updates": "~0.24.8"
+=======
+    "react-native-safe-area-context": "4.8.2"
+>>>>>>> local-fixes
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
   },
   "private": true
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> local-fixes
