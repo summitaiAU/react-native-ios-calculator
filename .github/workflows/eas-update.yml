@@ -36,3 +36,5 @@ jobs:
         
       - name: EAS Update
         run: npx eas update --branch main --message "CI update from GitHub Actions" --non-interactive
+
+        
